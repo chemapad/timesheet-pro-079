@@ -37,6 +37,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #f8fafc;
@@ -44,6 +49,9 @@ body {
   line-height: 1.5;
   min-height: 100vh;
   padding-bottom: 60px;
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
 /* ===== ENCABEZADO UNIFICADO Y LIMPIO ===== */
@@ -51,10 +59,13 @@ body {
   background: var(--white);
   border-bottom: 1px solid var(--slate-200);
   padding: 12px 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .top-nav-inner {
   max-width: 960px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -109,6 +120,8 @@ body {
 
 /* ===== SELECTOR DE ROLES ESTILO SEGMENTED CONTROL ===== */
 .segmented-nav-wrap {
+  width: 100%;
+  box-sizing: border-box;
   background: var(--white);
   border-bottom: 1px solid var(--slate-200);
   padding: 8px 16px;
@@ -116,6 +129,7 @@ body {
 
 .segmented-nav {
   max-width: 960px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   background: var(--slate-100);
@@ -123,25 +137,32 @@ body {
   border-radius: var(--radius-md);
   gap: 4px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.segmented-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .seg-tab {
-  flex: 1;
+  flex: 1 0 auto;
   min-width: 130px;
   background: none;
   border: none;
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   transition: all 0.2s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .seg-tab:hover {
@@ -171,6 +192,8 @@ body {
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .container {
   max-width: 960px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 20px auto;
   padding: 0 16px;
 }
@@ -588,6 +611,95 @@ body {
   border: 1px solid var(--slate-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 600px) {
+  .top-nav {
+    padding: 8px 10px;
+  }
+  .top-nav-inner {
+    gap: 4px;
+  }
+  .project-tag {
+    display: none;
+  }
+  .logo-area {
+    font-size: 13px;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .logo-area span.icon {
+    width: 22px;
+    height: 22px;
+    font-size: 11px;
+  }
+  .top-nav-actions {
+    gap: 4px !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+  .btn-reset-clean {
+    padding: 4px 7px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .segmented-nav-wrap {
+    padding: 6px 12px;
+  }
+  .seg-tab {
+    min-width: 120px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  .crew-item-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+  }
+  .crew-left-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .crew-right-action {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+  .btn-attendance-toggle {
+    flex: 1;
+    padding: 10px;
+    font-size: 13px;
+    text-align: center;
+    justify-content: center;
+    min-height: 42px;
+  }
+  .btn-transfer-clean {
+    padding: 10px 14px;
+    font-size: 12px;
+    white-space: nowrap;
+    justify-content: center;
+    min-height: 42px;
+  }
+  .leader-bottom-bar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    text-align: center;
+    padding: 14px;
+  }
+  .leader-bottom-bar button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .inline-phase-select {
+    max-width: 140px;
+    font-size: 11px;
+  }
 }
 
 /* ===== VISTA SUPERINTENDENTE (LIMPIA & CLARA) ===== */
