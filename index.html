@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0c4381">
+  <title>Timesheet Pro — 079 Data Center</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== BARRA SUPERIOR LIMPIA ===== -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div class="logo-area">
+        <span class="icon">⏱️</span>
+        <span data-i18n="appName">TIMESHEET PRO</span>
+        <span class="project-tag" id="headerProjectTag" data-i18n="projectTag">| 079 Data Center</span>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button id="btnToggleLang" class="btn-reset-clean" title="Cambiar idioma / Switch language">
+          🌐 <span>English</span>
+        </button>
+        <button id="btnResetDemo" class="btn-reset-clean" data-i18n="resetDemo">🔄 Reiniciar Demo</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== SELECTOR DE ROLES COMPACTO ===== -->
+  <nav class="segmented-nav-wrap">
+    <div class="segmented-nav">
+      <button class="seg-tab active" data-tab="tab-lider">
+        <span data-i18n="tabLeader">👷 Líder en Campo</span>
+        <span class="seg-badge" id="badgeLeaderPending">0</span>
+      </button>
+
+      <button class="seg-tab" data-tab="tab-super">
+        <span data-i18n="tabSuper">🏗️ Superintendente</span>
+        <span class="seg-badge" id="badgeSuperStatus">Pendiente</span>
+      </button>
+
+      <button class="seg-tab" data-tab="tab-graficos">
+        <span data-i18n="tabCharts">📊 Horas-Hombre</span>
+        <span class="seg-badge" id="badgeTotalHours">0 hrs</span>
+      </button>
+
+      <button class="seg-tab" data-tab="tab-oficina">
+        <span data-i18n="tabOffice">👩‍💼 Secretaria</span>
+        <span class="seg-badge" style="background: #10b981; color: white;">Dayforce</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== CONTENIDO ===== -->
+  <main class="container">
+
+    <!-- ========================================== -->
+    <!-- VISTA 1: LÍDER EN CAMPO (ULTRA SIMPLE)    -->
+    <!-- ========================================== -->
+    <section id="tab-lider" class="view-section active">
+      <!-- Selector compacto y botón principal -->
+      <div class="leader-header-card">
+        <div class="leader-select-row">
+          <div class="clean-field">
+            <label data-i18n="activeLeadLabel">Mi Cuadrilla:</label>
+            <div class="leader-badge-card">
+              <div class="leader-badge-info">
+                <div class="leader-badge-avatar" id="currentLeaderAvatar">CG</div>
+                <div class="leader-badge-names">
+                  <h4 id="currentLeaderName">Carlos Gómez</h4>
+                  <span id="currentLeaderCrew">Cuadrilla A (Conduit & Tray)</span>
+                  <div style="font-size: 11px; color: var(--primary); font-weight: 600;" id="currentLeaderSuper">Super: Oshane Davis</div>
+                </div>
+              </div>
+              <button id="btnSwitchLeaderDemo" class="btn-reset-clean" style="padding: 4px 8px; font-size: 11px;" data-i18n="switchLeadDemo" title="Cambiar usuario de prueba para el demo">
+                🔄 Cambiar
+              </button>
+            </div>
+          </div>
+          <div class="clean-field">
+            <label data-i18n="phaseCodeLabel">Phase Code general de cuadrilla:</label>
+            <select id="selectDefaultPhaseCode" class="clean-select"></select>
+          </div>
+        </div>
+
+        <div class="leader-action-bar">
+          <button id="btnOpenKeypad" class="btn-action-primary" style="padding: 11px 16px;">
+            <span>🔢</span> <span data-i18n="enterIdAndSign">Marcar por ID</span>
+          </button>
+          <button id="btnOpenAddWorkerModal" class="btn-secondary-action">
+            <span>➕</span> <span data-i18n="btnAddWorkerToCrew">Agregar Empleado</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista limpia tipo checklist -->
+      <div class="crew-list-wrap">
+        <div class="crew-list-header">
+          <div>
+            <span id="crewListTitle" data-i18n="crewRoster">Personal de la Cuadrilla</span>
+            <span id="crewProgressCount" style="color: var(--primary); margin-left: 8px; font-weight: bold;">0 / 0</span>
+          </div>
+          <button id="btnMarkAllPresent" class="btn-reset-clean" style="font-size: 11px; padding: 4px 10px; background: var(--success-subtle); color: var(--success-text); border-color: #a7f3d0;" data-i18n="markAllPresent">
+            ⚡ Marcar Todos Presentes
+          </button>
+        </div>
+
+        <div id="crewGridContainer">
+          <!-- Filas limpias generadas dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Barra inferior sencilla de envío -->
+      <div class="leader-bottom-bar">
+        <div style="font-size: 13px; color: var(--slate-600);">
+          <span id="bottomDateDisplay">📅 14 Nov 2026</span> • <span id="bottomStatusTxt" data-i18n="bottomStatusSaved">Todos los datos guardados localmente</span>
+        </div>
+        <button id="btnSubmitCrewToSuper" class="btn-sign-clean" style="padding: 10px 18px; font-size: 14px;">
+          <span>📤</span> <span data-i18n="submitToSuper">Enviar al Superintendente</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 2: SUPERINTENDENTE                   -->
+    <!-- ========================================== -->
+    <section id="tab-super" class="view-section">
+      <!-- Selector de Superintendente (Oshane Davis vs Franklin Ramirez) -->
+      <div class="super-selector-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div class="clean-field" style="flex: 1; min-width: 260px;">
+            <label data-i18n="superFilterLabel">Superintendente de Campo:</label>
+            <select id="selectSuperintendentFilter" class="clean-select">
+              <option value="all" data-i18n="allSuperintendents">📋 Ambos Superintendentes (Consolidado)</option>
+              <option value="SUP-01" data-i18n="superOshane">👷 Oshane Davis — Área 1 (Cuadrillas A & B)</option>
+              <option value="SUP-02" data-i18n="superFranklin">👷 Franklin Ramirez — Área 2 (Cuadrillas C & D)</option>
+            </select>
+          </div>
+          <div id="superAreaInfoBadge" class="super-area-badge" data-i18n="superAreaAll">
+            Área 1 & 2 (Obra Completa — 4 Cuadrillas)
+          </div>
+        </div>
+      </div>
+
+      <div class="super-kpi-grid">
+        <div class="super-kpi-card">
+          <span class="super-kpi-num" id="superTotalWorkers">0</span>
+          <span class="super-kpi-label" data-i18n="workersOnSite">Trabajadores en Obra</span>
+        </div>
+        <div class="super-kpi-card">
+          <span class="super-kpi-num" id="superTotalHours">0</span>
+          <span class="super-kpi-label" data-i18n="reportedHours">Horas Reportadas</span>
+        </div>
+        <div class="super-kpi-card">
+          <span class="super-kpi-num" id="superTotalCrews">4</span>
+          <span class="super-kpi-label" data-i18n="activeCrews">Cuadrillas Activas</span>
+        </div>
+        <div class="super-kpi-card">
+          <span class="super-kpi-num" id="superSignaturesPct">0%</span>
+          <span class="super-kpi-label" data-i18n="signaturesCompleted">Firmas Completadas</span>
+        </div>
+      </div>
+
+      <div class="super-approval-banner">
+        <div class="super-approval-text">
+          <h3 data-i18n="jobsiteApprovalTitle">Aprobación de Jornada en Obra</h3>
+          <p id="superBannerText" data-i18n="jobsiteApprovalText">Revisa las cuadrillas. Al aprobar, se enviará el archivo Dayforce automáticamente por correo a la secretaria.</p>
+        </div>
+        <div id="superApprovalActionBox">
+          <button id="btnSuperApprove" class="btn-approve-huge">
+            <span>✅</span> <span data-i18n="btnApproveAndSend">Aprobar y Enviar a Secretaría</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--slate-700); margin-bottom: 8px;" data-i18n="crewDetailTitle">
+          Detalle por Cuadrilla:
+        </h4>
+        <div id="superCrewsAccordionContainer">
+          <!-- Acordeón dinámico -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 3: HORAS-HOMBRE (CHARTS)            -->
+    <!-- ========================================== -->
+    <section id="tab-graficos" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--slate-900);" data-i18n="chartsHeaderTitle">
+          Control de Horas-Hombre por Phase Code
+        </h3>
+        <select id="selectFilterLeaderCharts" class="clean-select" style="width: auto; padding: 6px 12px; font-size: 13px;">
+          <option value="all" data-i18n="allCrewsConsolidated">Todas las Cuadrillas (Consolidado)</option>
+        </select>
+      </div>
+
+      <div id="chartsApprovalBanner"></div>
+
+      <div class="charts-split">
+        <div class="chart-card">
+          <h4 data-i18n="hoursInvestedByTask">📈 Horas Invertidas por Tarea</h4>
+          <div id="barChartContainer"></div>
+        </div>
+
+        <div class="chart-card">
+          <h4 data-i18n="laborDistribution">🍩 Distribución de Mano de Obra</h4>
+          <div id="donutChartContainer"></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h4 data-i18n="productivitySummary">Resumen de Productividad</h4>
+        <div class="table-clean-wrap">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th data-i18n="thPhaseCode">Phase Code</th>
+                <th data-i18n="thDescription">Descripción</th>
+                <th data-i18n="thCategory">Categoría</th>
+                <th style="text-align: center;" data-i18n="thPersonnel">Personal</th>
+                <th style="text-align: center;" data-i18n="thHours">Horas</th>
+                <th style="text-align: center;" data-i18n="thTotalPct">% Total</th>
+              </tr>
+            </thead>
+            <tbody id="metricsTableBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VISTA 4: SECRETARIA / OFICINA (DAYFORCE)   -->
+    <!-- ========================================== -->
+    <section id="tab-oficina" class="view-section">
+      <div id="emailSimulationBox" class="email-box-clean">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--primary);">
+          <span data-i18n="officeReportReceived">📩 Reporte Recibido del Superintendente</span>
+          <span style="font-weight: normal; color: var(--slate-500);" id="emailSimTimestamp">Hoy, 07:35 AM</span>
+        </div>
+        <p style="font-size: 13px; color: var(--slate-600); margin: 6px 0;" id="emailSimBody" data-i18n="officeAttachmentsText">
+          Archivos adjuntos: <strong>timesheet_dayforce.csv</strong> y <strong>firmas_auditoria.pdf</strong>.
+        </p>
+      </div>
+
+      <div class="office-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--slate-900);" data-i18n="officePreviewTitle">Revisión Previa & Exportación a Dayforce</h3>
+            <p style="font-size: 12px; color: var(--slate-500);" data-i18n="officePreviewSubtitle">Ajusta horas si es necesario antes de exportar el archivo definitivo.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btnDownloadDayforceCsv" class="btn-sign-clean" style="background: var(--success);">
+              <span>📥</span> <span data-i18n="btnDownloadDayforceCsv">Descargar CSV Dayforce</span>
+            </button>
+            <button id="btnPrintAuditPdf" class="btn-reset-clean" style="border-color: var(--primary); color: var(--primary);">
+              <span>🖨️</span> <span data-i18n="btnViewPdf">Ver Hoja de Auditoría (PDF)</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <input type="text" id="officeSearchInput" class="clean-select" style="flex: 1;" placeholder="Buscar por ID o nombre..." data-i18n-placeholder="searchPlaceholder" />
+          <select id="officeLeaderFilter" class="clean-select" style="width: 200px;">
+            <option value="all" data-i18n="allCrewsFilter">Todas las cuadrillas</option>
+          </select>
+        </div>
+
+        <div class="table-clean-wrap">
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th style="width: 70px;" data-i18n="thId">ID</th>
+                <th data-i18n="thName">Nombre</th>
+                <th data-i18n="thCrew">Cuadrilla</th>
+                <th data-i18n="thPhaseCode">Phase Code</th>
+                <th style="text-align: center; width: 75px;" data-i18n="thHours">Horas</th>
+                <th style="text-align: center; width: 110px;" data-i18n="thAttendance">Asistencia</th>
+                <th style="text-align: center; width: 80px;" data-i18n="thAction">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="officeTableBody">
+              <!-- Filas dinámicas -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PIN PAD / TECLADO NUMÉRICO          -->
+  <!-- ========================================== -->
+  <div id="modalKeypad" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 340px;">
+      <div class="modal-header">
+        <div>
+          <h3 data-i18n="modalKeypadTitle">Ingreso Rápido por ID</h3>
+          <span style="font-size: 12px; color: var(--slate-500);" data-i18n="modalKeypadSubtitle">Teclea tu número de empleado</span>
+        </div>
+        <button class="modal-close" id="btnCloseKeypad">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="id-screen" id="keypadDisplay">____</div>
+        
+        <div id="keypadFeedback" style="min-height: 20px; text-align: center; margin-top: 8px; font-size: 13px; font-weight: bold; color: var(--primary);" data-i18n="keypadPrompt">
+          Ingresa 4 dígitos (ej: 4521)
+        </div>
+
+        <div class="keypad-matrix">
+          <button class="keypad-key" data-key="1">1</button>
+          <button class="keypad-key" data-key="2">2</button>
+          <button class="keypad-key" data-key="3">3</button>
+          <button class="keypad-key" data-key="4">4</button>
+          <button class="keypad-key" data-key="5">5</button>
+          <button class="keypad-key" data-key="6">6</button>
+          <button class="keypad-key" data-key="7">7</button>
+          <button class="keypad-key" data-key="8">8</button>
+          <button class="keypad-key" data-key="9">9</button>
+          <button class="keypad-key" data-key="clear" style="color: var(--danger); font-size: 13px;" data-i18n="keypadClear">BORRAR</button>
+          <button class="keypad-key" data-key="0">0</button>
+          <button class="keypad-key" data-key="enter" style="background: var(--success); color: white; font-size: 14px;" data-i18n="keypadGo">IR ➔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: PRESTAR / MOVER TRABAJADOR          -->
+  <!-- ========================================== -->
+  <div id="modalTransferWorker" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 400px;">
+      <div class="modal-header">
+        <div>
+          <h3 data-i18n="modalTransferTitle">Prestar / Mover Trabajador</h3>
+          <span id="transferWorkerName" style="font-size: 12px; color: var(--primary); font-weight: bold;"></span>
+        </div>
+        <button class="modal-close" id="btnCloseTransferModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--slate-600); margin-bottom: 12px;" data-i18n="modalTransferDesc">
+          Transfiere a este trabajador a otro líder para la jornada de hoy:
+        </p>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;" data-i18n="transferToLeader">Transferir a la Cuadrilla de:</label>
+          <select id="selectTransferTargetLeader" class="clean-select"></select>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;" data-i18n="transferPhase">Phase Code en la nueva cuadrilla:</label>
+          <select id="selectTransferTargetPhase" class="clean-select"></select>
+        </div>
+        <button id="btnConfirmTransferWorker" class="btn-action-primary" style="padding: 10px; font-size: 13px;" data-i18n="btnConfirmTransfer">
+          🚀 Confirmar Transferencia
+        </button>
+
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--slate-200);">
+          <span style="font-size: 11px; font-weight: bold; color: var(--slate-700); display: block; margin-bottom: 4px;" data-i18n="removeTodayHeader">O Quitar de la Cuadrilla por Hoy:</span>
+          <p style="font-size: 11px; color: var(--slate-500); margin-bottom: 8px;" data-i18n="removeTodayDesc">
+            Si el trabajador fue prestado a otra área y no quieres que aparezca como ausente en tu lista:
+          </p>
+          <button id="btnRemoveFromCrewToday" class="btn-reset-clean" style="color: var(--danger); border-color: #fca5a5; width: 100%; text-align: center; padding: 8px;" data-i18n="btnRemoveFromCrewToday">
+            🗑️ Quitar de mi lista hoy (Prestado)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: AGREGAR EMPLEADO A CUADRILLA        -->
+  <!-- ========================================== -->
+  <div id="modalAddWorker" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 data-i18n="modalAddWorkerCrewTitle">Agregar / Recibir Empleado</h3>
+        <button class="modal-close" id="btnCloseAddWorker">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--slate-600); margin-bottom: 12px;" data-i18n="modalAddWorkerCrewDesc">
+          Selecciona un empleado de otra cuadrilla o del banco de la obra:
+        </p>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;" data-i18n="selectCompanyEmployee">Seleccionar empleado disponible:</label>
+          <select id="selectAvailableWorker" class="clean-select"></select>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;" data-i18n="addPhaseLabel">Phase Code para este empleado:</label>
+          <select id="selectAddWorkerPhase" class="clean-select"></select>
+        </div>
+        <button id="btnConfirmAddWorker" class="btn-action-primary" style="background: var(--success); padding: 10px; font-size: 13px;" data-i18n="btnAddEmployeeToCrew">
+          ✅ Agregar a mi Cuadrilla (Presente 8h)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: DIVIDIR HORAS                       -->
+  <!-- ========================================== -->
+  <div id="modalSplitHours" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 data-i18n="splitHoursTitle">Dividir Horas en Dos Tareas</h3>
+        <button class="modal-close" id="btnCloseSplitModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 10px;" id="splitModalText"></p>
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 3px;" data-i18n="newPhaseCodeLabel">Nuevo Phase Code</label>
+          <select id="splitPhaseSelect" class="clean-select"></select>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 3px;" data-i18n="hoursToTransferLabel">Horas a transferir</label>
+          <input type="number" id="splitHoursInput" class="clean-select" min="0.5" max="7.5" step="0.5" value="4" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnCancelSplit" class="btn-reset-clean" data-i18n="btnCancel">Cancelar</button>
+        <button id="btnConfirmSplit" class="btn-sign-clean" data-i18n="btnSplit">Dividir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: CAMBIAR LÍDER (SOLO PARA DEMO)      -->
+  <!-- ========================================== -->
+  <div id="modalSwitchLeader" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 360px;">
+      <div class="modal-header">
+        <h3 data-i18n="switchLeadModalTitle">Seleccionar Líder de Prueba</h3>
+        <button class="modal-close" id="btnCloseSwitchLeader">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--slate-600); margin-bottom: 12px;" data-i18n="switchLeadModalDesc">
+          En campo real, cada líder inicia sesión y solo ve a su propia cuadrilla. Elige qué líder quieres simular para este demo:
+        </p>
+        <div id="switchLeaderButtonsList" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Botones dinámicos de cuadrillas -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: VERIFICACIÓN Y ENVÍO DE CUADRILLA  -->
+  <!-- ========================================== -->
+  <div id="modalConfirmSubmitCrew" class="modal-overlay">
+    <div class="modal-dialog" style="max-width: 380px;">
+      <div class="modal-header">
+        <div>
+          <h3 data-i18n="modalSubmitVerifyTitle">Certificar y Enviar Cuadrilla</h3>
+          <span style="font-size: 11px; color: var(--slate-500);" data-i18n="modalSubmitVerifySub">Verificación y firma digital del líder en campo</span>
+        </div>
+        <button class="modal-close" id="btnCloseSubmitModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="submit-modal-summary" style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong id="modalSubmitLeaderName" style="font-size: 13px; color: var(--slate-900);">Carlos Gómez</strong>
+            <span id="modalSubmitCrewName" class="id-tag" style="background: #e0f2fe; color: #0369a1;">Cuadrilla A</span>
+          </div>
+          <div style="font-size: 12px; color: var(--slate-600); display: flex; justify-content: space-between;">
+            <span data-i18n="assignedSuperLabel">Superintendente a cargo:</span>
+            <strong id="modalSubmitSuperName" style="color: var(--primary);">Oshane Davis</strong>
+          </div>
+          <div style="font-size: 12px; color: var(--slate-600); display: flex; justify-content: space-between; margin-top: 4px;">
+            <span data-i18n="crewRoster">Personal:</span>
+            <strong id="modalSubmitStats" style="color: var(--success-text);">4 / 6 Presentes (32 hrs)</strong>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 700; color: var(--slate-700); display: block; margin-bottom: 6px;" data-i18n="enterLeaderPinPrompt">
+            Ingresa tu Código de Empleado / PIN para confirmar:
+          </label>
+          <input type="password" id="inputLeaderSubmitPin" class="clean-select" style="font-size: 20px; font-family: monospace; letter-spacing: 4px; text-align: center; font-weight: bold; width: 100%; box-sizing: border-box;" placeholder="••••" data-i18n-placeholder="submitPinPlaceholder" maxlength="8" autocomplete="off" />
+          <div id="submitPinHint" style="font-size: 11px; color: var(--slate-500); margin-top: 6px; text-align: center;">
+            Código de verificación: <strong>4525</strong>
+          </div>
+          <div id="submitPinError" style="font-size: 12px; color: var(--danger); font-weight: bold; margin-top: 6px; text-align: center; display: none;"></div>
+        </div>
+
+        <button id="btnConfirmSubmitWithPin" class="btn-sign-clean" style="width: 100%; justify-content: center; padding: 11px; font-size: 13px; margin-top: 8px;" data-i18n="btnConfirmSubmit">
+          🔒 Confirmar y Enviar al Superintendente
+        </button>
+        <button id="btnCancelSubmitModal" class="btn-reset-clean" style="width: 100%; text-align: center; padding: 8px; margin-top: 6px; font-size: 12px;" data-i18n="btnCancel">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Standalone Bundle -->
+  <script src="bundle.js"></script>
+</body>
+</html>
